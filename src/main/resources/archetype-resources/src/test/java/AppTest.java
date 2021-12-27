@@ -1,14 +1,12 @@
 package ${package};
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppTest {
-
     @Test
-    void testShouldRun() {
-        assertThat(true).isEqualTo(true);
+    void assertjShouldWork() {
+        assertThat(true).isTrue();
     }
 }
