@@ -1,19 +1,24 @@
 <archetype-descriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                      xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0"
-                      xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0 https://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd"
+                      xmlns="https://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0"
                       name="archetype-java-junit">
     <fileSets>
         <fileSet filtered="true" packaged="true">
             <directory>src/main/java</directory>
         </fileSet>
-        <fileSet filtered="false" packaged="false">
+        <fileSet>
             <directory>src/main/resources</directory>
         </fileSet>
         <fileSet filtered="true" packaged="true">
             <directory>src/test/java</directory>
         </fileSet>
-        <fileSet filtered="false" packaged="false">
+        <fileSet>
             <directory>src/test/resources</directory>
+        </fileSet>
+        <fileSet>
+            <directory></directory>
+            <includes>
+                <include>_gitignore</include>
+            </includes>
         </fileSet>
     </fileSets>
 </archetype-descriptor>
