@@ -27,6 +27,7 @@
         <fileSet>
             <directory></directory>
             <includes>
+                <!-- TODO: https://issues.apache.org/jira/projects/ARCHETYPE/issues/ARCHETYPE-505 -->
                 <include>_gitignore</include>
             </includes>
         </fileSet>

@@ -1,0 +1,6 @@
+# Enable auto-env through the sdkman_auto_env config
+# Add key=value pairs of SDKs to use below
+# Install sdk: sdk env install
+# Use sdk: sdk env
+# Restore previous sdk: sdk env clear
+java=17.0.1-tem
