@@ -1,4 +1,4 @@
-package com.example.it.java11;
+package com.example.it;
 
 public class App {
 

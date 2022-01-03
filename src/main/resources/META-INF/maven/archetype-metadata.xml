@@ -1,6 +1,16 @@
 <archetype-descriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       xmlns="https://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0"
                       name="archetype-java-junit">
+    <requiredProperties>
+        <requiredProperty key="javaVersion">
+            <defaultValue>11</defaultValue>
+            <validationRegex>^[1-9][0-9]?$</validationRegex>
+        </requiredProperty>
+        <requiredProperty key="gitInit">
+            <defaultValue>true</defaultValue>
+            <validationRegex>true|false</validationRegex>
+        </requiredProperty>
+    </requiredProperties>
     <fileSets>
         <fileSet filtered="true" packaged="true">
             <directory>src/main/java</directory>
