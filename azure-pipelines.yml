@@ -26,16 +26,16 @@ steps:
     jdkDestinationDirectory: '$(Agent.ToolsDirectory)/binaries/openjdk'
     cleanDestinationDirectory: true
     createExtractDirectory: false
-
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'Path'
-    jdkDirectory: '$(Agent.ToolsDirectory)/binaries/openjdk'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: 1.17
     mavenVersionOption: 'Default'
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
     goals: 'package'
+
