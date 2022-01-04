@@ -12,7 +12,20 @@ pr:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+
 steps:
+
+- task: Cache@2
+  displayName: Cache Maven local repo
+  inputs:
+    key: 'maven | "$(Agent.OS)" | **/pom.xml'
+    restoreKeys: |
+    maven | "$(Agent.OS)"
+    maven
+    path: $(MAVEN_CACHE_FOLDER)
 
 - task: Bash@3
   inputs:
@@ -42,5 +55,6 @@ steps:
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
+    mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
     goals: 'verify'
 
