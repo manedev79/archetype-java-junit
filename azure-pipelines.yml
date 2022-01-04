@@ -23,8 +23,8 @@ steps:
   inputs:
     key: 'maven | "$(Agent.OS)" | **/pom.xml'
     restoreKeys: |
-    maven | "$(Agent.OS)"
-    maven
+      maven | "$(Agent.OS)"
+      maven
     path: $(MAVEN_CACHE_FOLDER)
 
 - task: Bash@3
