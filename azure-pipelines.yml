@@ -25,7 +25,7 @@ steps:
     jdkFile: '$(Agent.TempDirectory)/OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz'
     jdkDestinationDirectory: '$(Agent.ToolsDirectory)/binaries/openjdk'
     cleanDestinationDirectory: true
-    createExtractDirectory: true
+    createExtractDirectory: false
 
 - task: Maven@3
   inputs:
