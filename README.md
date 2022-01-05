@@ -1,6 +1,6 @@
 # archetype-java-junit
 
-[![Build Status](https://dev.azure.com/manedev79/OSS%20Projects/_apis/build/status/manedev79.archetype-java-junit?branchName=azure-pipelines)](https://dev.azure.com/manedev79/OSS%20Projects/_build/latest?definitionId=4&branchName=main)
+[![Build Status](https://dev.azure.com/manedev79/OSS%20Projects/_apis/build/status/manedev79.archetype-java-junit?branchName=main)](https://dev.azure.com/manedev79/OSS%20Projects/_build/latest?definitionId=4&branchName=main)
 
 Maven archetype for simple java projects with LTS JDK and JUnit5.
 
