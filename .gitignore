@@ -6,3 +6,6 @@ target/
 
 # VSCode
 .vscode
+
+# Direnv
+.envrc
