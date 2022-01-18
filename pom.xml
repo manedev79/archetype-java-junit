@@ -9,12 +9,48 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
 
+    <name>archetype-java-junit</name>
+    <description>Maven archetype with recent java version, JUnit5, assertj and git repository in place.</description>
+    <url>https://github.com/manedev79/archetype-java-junit</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://spdx.org/licenses/MIT.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Matthias Nemeth</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/manedev79/archetype-java-junit.git</connection>
+        <developerConnection>scm:git:ssh://github.com:manedev79/archetype-java-junit.git</developerConnection>
+        <url>https://github.com/manedev79/archetype-java-junit</url>
+    </scm>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.archetype.version>3.2.1</maven.archetype.version>
+        <plexus.utils.version>3.3.1</plexus.utils.version>
+        <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
+        <maven.resource.plugin.version>3.2.0</maven.resource.plugin.version>
+        <maven.javadoc.plugin.version>3.3.1</maven.javadoc.plugin.version>
+        <maven.gpg.plugin.version>3.0.1</maven.gpg.plugin.version>
+        <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <extensions>
@@ -31,16 +67,24 @@
                     <version>${maven.archetype.version}</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.archetype</groupId>
-                    <artifactId>maven-archetype</artifactId>
-                    <version>${maven.archetype.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.codehaus.plexus</groupId>
-                            <artifactId>plexus-utils</artifactId>
-                            <version>3.3.1</version>
-                        </dependency>
-                    </dependencies>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resource.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven.source.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>${maven.gpg.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -48,16 +92,88 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.plexus</groupId>
                         <artifactId>plexus-utils</artifactId>
-                        <version>3.3.1</version>
+                        <version>${plexus.utils.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus.staging.maven.plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <!-- Workaround for https://issues.sonatype.org/browse/OSSRH-66257 -->
+                        <groupId>com.thoughtworks.xstream</groupId>
+                        <artifactId>xstream</artifactId>
+                        <version>1.4.15</version> <!-- apparently this needs to be exactly this version -->
                     </dependency>
                 </dependencies>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
