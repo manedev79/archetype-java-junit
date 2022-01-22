@@ -12,11 +12,29 @@ pr:
 pool:
   vmImage: ubuntu-latest
 
+parameters:
+  - name: RELEASE_VERSION
+    type: string
+    displayName: Version to release, e.g. 1.0.0
+    default: 1.0.0-SNAPSHOT
+  - name: NEXT_SNAPSHOT_VERSION
+    type: string
+    displayName: Next snapshot version, e.g. 1.0.1-SNAPSHOT
+    default: 1.0.1-SNAPSHOT
+
 variables:
+  JDK_VERSION: 1.17
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  RELEASE_BRANCH: main
+  ${{ if eq(variables['Build.SourceBranchName'], variables['RELEASE_BRANCH']) }}:
+    IS_RELEASE: ${{ not(endsWith(parameters['RELEASE_VERSION'], 'SNAPSHOT')) }}
 
 steps:
+
+- checkout: self
+  persistCredentials: 'true'
+  clean: 'true'
 
 - task: Cache@2
   displayName: Cache Maven local repo
@@ -45,16 +63,38 @@ steps:
     createExtractDirectory: false
 
 - task: Maven@3
+  displayName: Set project version to ${{ parameters.RELEASE_VERSION }}
+  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
   inputs:
-    mavenPomFile: 'pom.xml'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: 1.17
-    mavenVersionOption: 'Default'
-    mavenAuthenticateFeed: false
-    effectivePomSkip: false
-    sonarQubeRunAnalysis: false
+    jdkVersionOption: ${{ variables.JDK_VERSION }}
+    goals: '-DnewVersion=${{ parameters.RELEASE_VERSION }}'
+    publishJUnitResults: false
+
+
+- task: Maven@3
+  displayName: Build and test
+  inputs:
+    jdkVersionOption: ${{ variables.JDK_VERSION }}
     mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
     goals: 'verify'
 
+- script: |
+    git tag ${{ parameters.RELEASE_VERSION }}
+    git push --atomic origin ${{ variables.RELEASE_BRANCH }} ${{ parameters.RELEASE_VERSION }}
+  displayName: Commit release version and create release tag
+  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
+
+  # TODO: Deploy
+
+- task: Maven@3
+  displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
+  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
+  inputs:
+    jdkVersionOption: ${{ variables.JDK_VERSION }}
+    goals: '-DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
+    publishJUnitResults: false
+
+- script: |
+    git push
+  displayName: Commit next snapshot version
+  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
