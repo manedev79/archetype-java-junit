@@ -28,7 +28,7 @@ variables:
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   # TODO: RELEASE_BRANCH: main
   RELEASE_BRANCH: release-pipeline
-  ${{ if eq(variables['Build.SourceBranchName'], variables['RELEASE_BRANCH']) }}:
+  ${{ if eq(variables['Build.SourceBranchName'], 'release-pipeline') }}:
     IS_RELEASE: ${{ not(endsWith(parameters['RELEASE_VERSION'], 'SNAPSHOT')) }}
   ${{ else }}:
     IS_RELEASE: 'false'
