@@ -30,6 +30,8 @@ variables:
   RELEASE_BRANCH: release-pipeline
   ${{ if eq(variables['Build.SourceBranchName'], variables['RELEASE_BRANCH']) }}:
     IS_RELEASE: ${{ not(endsWith(parameters['RELEASE_VERSION'], 'SNAPSHOT')) }}
+  ${{ else }}:
+    IS_RELEASE: 'false'
 
 steps:
 
