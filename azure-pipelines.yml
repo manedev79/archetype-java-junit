@@ -26,7 +26,8 @@ variables:
   JDK_VERSION: 1.17
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  RELEASE_BRANCH: main
+  # TODO: RELEASE_BRANCH: main
+  RELEASE_BRANCH: release-pipeline
   ${{ if eq(variables['Build.SourceBranchName'], variables['RELEASE_BRANCH']) }}:
     IS_RELEASE: ${{ not(endsWith(parameters['RELEASE_VERSION'], 'SNAPSHOT')) }}
 
