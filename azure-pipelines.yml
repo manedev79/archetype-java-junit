@@ -70,7 +70,7 @@ steps:
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: '-DnewVersion=${{ parameters.RELEASE_VERSION }}'
+    goals: versions:set '-DnewVersion=${{ parameters.RELEASE_VERSION }}'
     publishJUnitResults: false
 
 
@@ -94,7 +94,7 @@ steps:
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: '-DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
+    goals: versions:set '-DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
     publishJUnitResults: false
 
 - script: |
