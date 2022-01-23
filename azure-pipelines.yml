@@ -25,7 +25,8 @@ parameters:
 variables:
   JDK_VERSION: 1.17
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
+  MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
   # TODO: RELEASE_BRANCH: main
   RELEASE_BRANCH: release-pipeline
   ${{ if eq(variables['Build.SourceBranchName'], 'release-pipeline') }}:
@@ -70,7 +71,7 @@ steps:
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: versions:set '-DnewVersion=${{ parameters.RELEASE_VERSION }}'
+    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }}
     publishJUnitResults: false
 
 
@@ -78,8 +79,8 @@ steps:
   displayName: Build and test
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
-    mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-    goals: 'verify'
+    mavenOptions: $(MAVEN_OPTIONS)
+    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) verify'
 
 - script: |
     git tag ${{ parameters.RELEASE_VERSION }}
@@ -94,7 +95,7 @@ steps:
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: versions:set '-DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
+    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
     publishJUnitResults: false
 
 - script: |
