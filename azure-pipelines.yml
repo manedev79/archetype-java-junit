@@ -81,6 +81,11 @@ steps:
     goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) verify'
 
 - script: |
+    git config --global user.email "ci@dev.azure.com"
+    git config --global user.name "[CI]"
+  displayName: Configure git
+
+- script: |
     git add pom.xml
     git commit -m "[CI] Set version to ${{ parameters.RELEASE_VERSION }}"
     git tag ${{ parameters.RELEASE_VERSION }}
