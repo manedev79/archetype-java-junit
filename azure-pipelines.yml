@@ -27,9 +27,7 @@ variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
   MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
-  # TODO: RELEASE_BRANCH: main
-  RELEASE_BRANCH: release-pipeline
-  ${{ if eq(variables['Build.SourceBranchName'], 'release-pipeline') }}:
+  ${{ if startsWith(variables['Build.SourceBranchName'], 'release') }}:
     IS_RELEASE: ${{ not(endsWith(parameters['RELEASE_VERSION'], 'SNAPSHOT')) }}
   ${{ else }}:
     IS_RELEASE: 'false'
@@ -89,7 +87,7 @@ steps:
     git add pom.xml
     git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
     git tag ${{ parameters.RELEASE_VERSION }}
-    git push --atomic origin HEAD:${{ variables.RELEASE_BRANCH }} ${{ parameters.RELEASE_VERSION }}
+    git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
   displayName: Commit release version and create release tag
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
 
@@ -106,6 +104,6 @@ steps:
 - script: |
     git add pom.xml
     git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
-    git push --atomic origin HEAD:${{ variables.RELEASE_BRANCH }}
+    git push --atomic origin HEAD:$(Build.SourceBranchName)
   displayName: Commit next snapshot version
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
