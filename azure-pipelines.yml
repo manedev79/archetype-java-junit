@@ -87,9 +87,9 @@ steps:
 
 - script: |
     git add pom.xml
-    git commit -m "[CI] Set version to ${{ parameters.RELEASE_VERSION }}"
+    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
     git tag ${{ parameters.RELEASE_VERSION }}
-    git push --atomic origin ${{ variables.RELEASE_BRANCH }} ${{ parameters.RELEASE_VERSION }}
+    git push --atomic origin HEAD:${{ variables.RELEASE_BRANCH }} ${{ parameters.RELEASE_VERSION }}
   displayName: Commit release version and create release tag
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
 
@@ -105,7 +105,7 @@ steps:
 
 - script: |
     git add pom.xml
-    git commit -m "[CI] Set version to ${{ parameters.RELEASE_VERSION }}"
-    git push
+    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
+    git push --atomic origin HEAD:${{ variables.RELEASE_BRANCH }}
   displayName: Commit next snapshot version
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
