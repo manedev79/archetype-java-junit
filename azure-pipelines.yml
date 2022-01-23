@@ -83,6 +83,8 @@ steps:
     goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) verify'
 
 - script: |
+    git add pom.xml
+    git commit -m "[CI] Set version to ${{ parameters.RELEASE_VERSION }}"
     git tag ${{ parameters.RELEASE_VERSION }}
     git push --atomic origin ${{ variables.RELEASE_BRANCH }} ${{ parameters.RELEASE_VERSION }}
   displayName: Commit release version and create release tag
@@ -99,6 +101,8 @@ steps:
     publishJUnitResults: false
 
 - script: |
+    git add pom.xml
+    git commit -m "[CI] Set version to ${{ parameters.RELEASE_VERSION }}"
     git push
   displayName: Commit next snapshot version
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
