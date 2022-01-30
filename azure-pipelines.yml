@@ -41,6 +41,11 @@ steps:
   persistCredentials: 'true'
   clean: 'true'
 
+- script: |
+    ./gpg_import_test.sh
+  displayName: Pipeline unit tests  
+  workingDirectory: $(Build.SourcesDirectory)/.azure-pipelines/tests
+
 - task: Cache@2
   displayName: Cache Maven local repo
   inputs:
