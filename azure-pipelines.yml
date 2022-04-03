@@ -78,7 +78,6 @@ steps:
     goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }}
     publishJUnitResults: false
 
-
 - task: Maven@3
   displayName: Build and test
   inputs:
@@ -99,7 +98,15 @@ steps:
   displayName: Commit release version and create release tag
   condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
 
-  # TODO: Deploy
+
+
+- task: Maven@3
+  displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
+  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
+  inputs:
+    jdkVersionOption: ${{ variables.JDK_VERSION }}
+    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease
+    publishJUnitResults: false
 
 - task: Maven@3
   displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
