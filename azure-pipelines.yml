@@ -49,4 +49,4 @@ steps:
 
 - script: |
     echo "Uploading test file"
-    curl -Ffile=./sample.txt "https://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
+    curl -Ffile=./sample.txt "http://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
