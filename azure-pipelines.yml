@@ -49,9 +49,9 @@ steps:
 
 - script: |
     echo "Uploading other test file"
-    curl -Ffile=@sample.txt "http://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
+    curl -Ffile=@sample.txt "https://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
 
 - script: |
     echo "Uploading test file"
-    curl -Ffile=@$(testFile.secureFilePath) "http://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
+    curl -Ffile=@$(testFile.secureFilePath) "https://03dc-89-247-41-253.ngrok.io/upload?token=9812379124987ba"
 
