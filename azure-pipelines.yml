@@ -3,9 +3,6 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
-trigger:
-- main
-
 pr:
 - main
 
@@ -30,21 +27,12 @@ variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
   MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
-  ${{ if startsWith(variables['Build.SourceBranchName'], 'release') }}:
-    IS_RELEASE: ${{ not(endsWith(parameters['RELEASE_VERSION'], 'SNAPSHOT')) }}
-  ${{ else }}:
-    IS_RELEASE: 'false'
-
+  
 steps:
 
 - checkout: self
   persistCredentials: 'true'
   clean: 'true'
-
-- script: |
-    ./gpg_import_test.sh
-  displayName: Pipeline unit tests  
-  workingDirectory: $(Build.SourcesDirectory)/.azure-pipelines/tests
 
 - task: Cache@2
   displayName: Cache Maven local repo
@@ -71,54 +59,8 @@ steps:
     createExtractDirectory: false
 
 - task: Maven@3
-  displayName: Set project version to ${{ parameters.RELEASE_VERSION }}
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }}
-    publishJUnitResults: false
-
-- task: Maven@3
   displayName: Build and test
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
     mavenOptions: $(MAVEN_OPTIONS)
     goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) verify'
-
-- script: |
-    git config --global user.email "ci@dev.azure.com"
-    git config --global user.name "[CI]"
-  displayName: Configure git
-
-- script: |
-    git add pom.xml
-    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
-    git tag ${{ parameters.RELEASE_VERSION }}
-    git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
-  displayName: Commit release version and create release tag
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
-
-
-
-- task: Maven@3
-  displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease
-    publishJUnitResults: false
-
-- task: Maven@3
-  displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
-    publishJUnitResults: false
-
-- script: |
-    git add pom.xml
-    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
-    git push --atomic origin HEAD:$(Build.SourceBranchName)
-  displayName: Commit next snapshot version
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
