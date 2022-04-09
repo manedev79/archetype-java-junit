@@ -13,11 +13,9 @@ parameters:
   - name: RELEASE_VERSION
     type: string
     displayName: Version to release, e.g. 1.0.0
-    default: 1.0.0-SNAPSHOT
   - name: NEXT_SNAPSHOT_VERSION
     type: string
     displayName: Next snapshot version, e.g. 1.0.1-SNAPSHOT
-    default: 1.0.1-SNAPSHOT
 
 variables:
   JDK_VERSION: 1.17
@@ -27,11 +25,7 @@ variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
   MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
-  ${{ if startsWith(variables['Build.SourceBranchName'], 'release') }}:
-    IS_RELEASE: ${{ not(endsWith(parameters['RELEASE_VERSION'], 'SNAPSHOT')) }}
-  ${{ else }}:
-    IS_RELEASE: 'false'
-
+  
 steps:
 
 - checkout: self
@@ -69,7 +63,6 @@ steps:
 
 - task: Maven@3
   displayName: Set project version to ${{ parameters.RELEASE_VERSION }}
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
     goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }}
@@ -93,11 +86,20 @@ steps:
     git tag ${{ parameters.RELEASE_VERSION }}
     git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
   displayName: Commit release version and create release tag
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
+
+- task: DownloadSecureFile@1
+  name: gpgkey
+  displayName: 'Download secret signing key'
+  inputs:
+    secureFile: 'secret_signing_key_F5CE35A802DF35C1.gpg'
+
+- task: ShellScript@2
+  inputs:
+    scriptPath: .azure-pipelines/scripts/gpg_import.sh
+    args: '$(gpgkey.secureFilePath)'
 
 - task: Maven@3
   displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
     goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease
@@ -105,7 +107,6 @@ steps:
 
 - task: Maven@3
   displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
     goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
@@ -116,4 +117,3 @@ steps:
     git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
     git push --atomic origin HEAD:$(Build.SourceBranchName)
   displayName: Commit next snapshot version
-  condition: and(succeeded(), eq(${{ variables.IS_RELEASE }}, 'true'))
