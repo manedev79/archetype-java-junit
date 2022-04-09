@@ -3,27 +3,17 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
+trigger:
+- main
+
 pr:
 - main
 
 pool:
   vmImage: ubuntu-latest
 
-parameters:
-  - name: RELEASE_VERSION
-    type: string
-    displayName: Version to release, e.g. 1.0.0
-    default: 1.0.0-SNAPSHOT
-  - name: NEXT_SNAPSHOT_VERSION
-    type: string
-    displayName: Next snapshot version, e.g. 1.0.1-SNAPSHOT
-    default: 1.0.1-SNAPSHOT
-
 variables:
   JDK_VERSION: 1.17
-  JDK_VERSION_SPEC: '17'
-  JDK_ARTIFACT_NAME: OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz
-  JDK_DOWNLOAD_URL: https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/$(JDK_ARTIFACT_NAME)
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
   MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
@@ -42,21 +32,6 @@ steps:
       maven | "$(Agent.OS)"
       maven
     path: $(MAVEN_CACHE_FOLDER)
-
-- script: |
-    # Download Eclipse Temurin
-    wget --quiet $(JDK_DOWNLOAD_URL) --output-document $(Agent.TempDirectory)/$(JDK_ARTIFACT_NAME)
-  displayName: Download Eclipse Temurin 17.0.1_12
-
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: $(JDK_VERSION_SPEC)
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'LocalDirectory'
-    jdkFile: '$(Agent.TempDirectory)/$(JDK_ARTIFACT_NAME)'
-    jdkDestinationDirectory: '$(Agent.ToolsDirectory)/binaries/openjdk'
-    cleanDestinationDirectory: true
-    createExtractDirectory: false
 
 - task: Maven@3
   displayName: Build and test
