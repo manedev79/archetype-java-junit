@@ -4,6 +4,5 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-keyfile="$1"
-
-gpg --import "$keyfile" 
+echo "Cleanup: $GNUPGHOME"
+rm -rf "$GNUPGHOME" 

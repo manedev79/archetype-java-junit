@@ -4,7 +4,10 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- main
+- none
+
+pr:
+- none
 
 pool:
   vmImage: ubuntu-latest
@@ -117,3 +120,8 @@ steps:
     git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
     git push --atomic origin HEAD:$(Build.SourceBranchName)
   displayName: Commit next snapshot version
+
+- task: ShellScript@2
+  condition: always()
+  inputs:
+    scriptPath: .azure-pipelines/scripts/gpg_cleanup.sh

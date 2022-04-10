@@ -9,6 +9,7 @@ oneTimeSetUp() {
 
 oneTimeTearDown() {
     unset GNUPGHOME
+    rm -rf $(pwd)/.gnupg
 }
 
 testFailsWithoutParameter() {
