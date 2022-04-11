@@ -81,6 +81,7 @@ steps:
     secureFile: 'secret_signing_key_F5CE35A802DF35C1.gpg'
 
 - task: ShellScript@2
+  displayName: Import GPG key
   inputs:
     scriptPath: .azure-pipelines/scripts/gpg_import.sh
     args: '$(gpgkey.secureFilePath)'
@@ -106,6 +107,7 @@ steps:
   displayName: Commit next snapshot version
 
 - task: ShellScript@2
+  displayName: Cleanup GPGHOME
   condition: always()
   inputs:
     scriptPath: .azure-pipelines/scripts/gpg_cleanup.sh
