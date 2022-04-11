@@ -21,11 +21,17 @@ parameters:
     displayName: Next snapshot version, e.g. 1.0.1-SNAPSHOT
 
 variables:
-  JDK_VERSION: 1.17
-  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
-  MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
-  GNUPGHOME: $(Pipeline.Workspace)/.gnupg
+  - group: 'gpg-secrets'
+  - name: JDK_VERSION
+    value: '1.17'
+  - name: MAVEN_CACHE_FOLDER
+    value: $(Pipeline.Workspace)/.m2/repository
+  - name: MAVEN_OPTIONS
+    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
+  - name: MAVEN_COMMAND_LINE_ARGUMENTS
+    value: '--batch-mode'
+  - name: GNUPGHOME 
+    value: $(Pipeline.Workspace)/.gnupg
   
 steps:
 
@@ -90,7 +96,7 @@ steps:
   displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease
+    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease -Dgpg.keyname=$(GPG_KEY_ID) -Dgpg.passphrase=$(GPG_PASSPHRASE)
     publishJUnitResults: false
 
 - task: Maven@3
