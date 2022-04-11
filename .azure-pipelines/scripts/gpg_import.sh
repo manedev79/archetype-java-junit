@@ -6,4 +6,5 @@ set -o nounset
 
 keyfile="$1"
 
-gpg --import "$keyfile" 
+# Need --batch to avoid 'Inappropriate ioctl for device' on CI
+gpg --batch --import "$keyfile" 

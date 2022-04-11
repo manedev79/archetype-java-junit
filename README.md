@@ -14,9 +14,6 @@ A git repo will be initialized for the created project.
 There is a `.gitignore` file with defaults for 
 Maven, IntelliJ IDEA and VSCode.
 
-
-
-
 ## Installation
 
 ### Prerequisites  
