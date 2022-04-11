@@ -1,0 +1,111 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- none
+
+pr:
+- none
+
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+  - name: RELEASE_VERSION
+    type: string
+    displayName: Version to release, e.g. 1.0.0
+  - name: NEXT_SNAPSHOT_VERSION
+    type: string
+    displayName: Next snapshot version, e.g. 1.0.1-SNAPSHOT
+
+variables:
+  JDK_VERSION: 1.17
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
+  MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
+  GNUPGHOME: $(Pipeline.Workspace)/.gnupg
+  
+steps:
+
+- checkout: self
+  persistCredentials: 'true'
+  clean: 'true'
+
+- script: |
+    ./gpg_import_test.sh
+    ./gpg_cleanup_test.sh
+  displayName: Pipeline unit tests  
+  workingDirectory: $(Build.SourcesDirectory)/.azure-pipelines/tests
+
+- task: Cache@2
+  displayName: Cache Maven local repo
+  inputs:
+    key: 'maven | "$(Agent.OS)" | **/pom.xml'
+    restoreKeys: |
+      maven | "$(Agent.OS)"
+      maven
+    path: $(MAVEN_CACHE_FOLDER)
+
+- task: Maven@3
+  displayName: Set project version to ${{ parameters.RELEASE_VERSION }}
+  inputs:
+    jdkVersionOption: ${{ variables.JDK_VERSION }}
+    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }}
+    publishJUnitResults: false
+
+- task: Maven@3
+  displayName: Build and test
+  inputs:
+    jdkVersionOption: ${{ variables.JDK_VERSION }}
+    mavenOptions: $(MAVEN_OPTIONS)
+    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) verify'
+
+- script: |
+    git config --global user.email "ci@dev.azure.com"
+    git config --global user.name "[CI]"
+  displayName: Configure git
+
+- script: |
+    git add pom.xml
+    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
+    git tag ${{ parameters.RELEASE_VERSION }}
+    git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
+  displayName: Commit release version and create release tag
+
+- task: DownloadSecureFile@1
+  name: gpgkey
+  displayName: 'Download secret signing key'
+  inputs:
+    secureFile: 'secret_signing_key_F5CE35A802DF35C1.gpg'
+
+- task: ShellScript@2
+  inputs:
+    scriptPath: .azure-pipelines/scripts/gpg_import.sh
+    args: '$(gpgkey.secureFilePath)'
+
+- task: Maven@3
+  displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
+  inputs:
+    jdkVersionOption: ${{ variables.JDK_VERSION }}
+    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease
+    publishJUnitResults: false
+
+- task: Maven@3
+  displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
+  inputs:
+    jdkVersionOption: ${{ variables.JDK_VERSION }}
+    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
+    publishJUnitResults: false
+
+- script: |
+    git add pom.xml
+    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
+    git push --atomic origin HEAD:$(Build.SourceBranchName)
+  displayName: Commit next snapshot version
+
+- task: ShellScript@2
+  condition: always()
+  inputs:
+    scriptPath: .azure-pipelines/scripts/gpg_cleanup.sh
