@@ -27,9 +27,9 @@ variables:
   - name: MAVEN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.m2/repository
   - name: MAVEN_OPTIONS
-    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m -s $(Pipeline.Workspace)/.azure-pipelines/settings.xml -Dnexus.serverId=$(NEXUS_SERVER_ID) -Dnexus.username=$(NEXUS_USERNAME) -Dnexus.password=$(NEXUS_PASSWORD)'
+    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m -Dnexus.serverId=$(NEXUS_SERVER_ID) -Dnexus.username=$(NEXUS_USERNAME) -Dnexus.password=$(NEXUS_PASSWORD)'
   - name: MAVEN_COMMAND_LINE_ARGUMENTS
-    value: '--batch-mode'
+    value: '--batch-mode --settings $(Pipeline.Workspace)/.azure-pipelines/settings.xml'
   - name: GNUPGHOME 
     value: $(Pipeline.Workspace)/.gnupg
   
