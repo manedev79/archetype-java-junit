@@ -21,13 +21,13 @@ parameters:
     displayName: Next snapshot version, e.g. 1.0.1-SNAPSHOT
 
 variables:
-  - group: 'gpg-secrets'
+  - group: 'oss-secrets'
   - name: JDK_VERSION
     value: '1.17'
   - name: MAVEN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.m2/repository
   - name: MAVEN_OPTIONS
-    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
+    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m -s $(Pipeline.Workspace)/.azure-pipelines/settings.xml -Dnexus.serverId=$(NEXUS_SERVER_ID) -Dnexus.username=$(NEXUS_USERNAME) -Dnexus.password=$(NEXUS_PASSWORD)'
   - name: MAVEN_COMMAND_LINE_ARGUMENTS
     value: '--batch-mode'
   - name: GNUPGHOME 
