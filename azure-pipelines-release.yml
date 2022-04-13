@@ -112,6 +112,10 @@ steps:
     git push --atomic origin HEAD:$(Build.SourceBranchName)
   displayName: Commit next snapshot version
 
+- publish: $(Build.SourcesDirectory)/.azure-pipelines/settings.xml
+  name: mvn-settings
+  displayName: Debug info
+
 - task: ShellScript@2
   displayName: Cleanup GPGHOME
   condition: always()
