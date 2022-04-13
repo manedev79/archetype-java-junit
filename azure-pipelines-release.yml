@@ -113,7 +113,7 @@ steps:
   displayName: Commit next snapshot version
 
 - publish: $(Build.SourcesDirectory)/.azure-pipelines/settings.xml
-  name: mvn-settings
+  name: mvn_settings
   displayName: Debug info
 
 - task: ShellScript@2
