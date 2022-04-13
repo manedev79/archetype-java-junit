@@ -27,9 +27,9 @@ variables:
   - name: MAVEN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.m2/repository
   - name: MAVEN_OPTIONS
-    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m -Dnexus.serverId=$(NEXUS_SERVER_ID) -Dnexus.username=$(NEXUS_USERNAME) -Dnexus.password=$(NEXUS_PASSWORD)'
+    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
   - name: MAVEN_COMMAND_LINE_ARGUMENTS
-    value: '--batch-mode --settings $(Build.SourcesDirectory)/.azure-pipelines/settings.xml -X'
+    value: '--batch-mode'
   - name: GNUPGHOME 
     value: $(Pipeline.Workspace)/.gnupg
   
@@ -91,6 +91,12 @@ steps:
   inputs:
     scriptPath: .azure-pipelines/scripts/gpg_import.sh
     args: '$(gpgkey.secureFilePath)'
+
+- task: MavenAuthenticate@0
+  displayName: Auth to OSS Nexus
+  inputs:
+    artifactsFeeds: ossrh
+    mavenServiceConnections: OSS Sonatype Nexus
 
 - task: Maven@3
   displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
