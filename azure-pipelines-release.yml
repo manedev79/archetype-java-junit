@@ -115,6 +115,7 @@ steps:
 - publish: $(Build.SourcesDirectory)/.azure-pipelines/settings.xml
   name: mvn_settings
   displayName: Debug info
+  condition: always()
 
 - task: ShellScript@2
   displayName: Cleanup GPGHOME
