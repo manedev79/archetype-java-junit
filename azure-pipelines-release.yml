@@ -117,16 +117,6 @@ steps:
     git push --atomic origin HEAD:$(Build.SourceBranchName)
   displayName: Commit next snapshot version
 
-- publish: /home/vsts/.m2/settings.xml
-  name: mvn_settings
-  displayName: Debug info
-  condition: always()
-
-- publish: $(System.DefaultWorkingDirectory)
-  name: working_directory
-  displayName: Debug Working Directory
-  condition: always()
-
 - task: ShellScript@2
   displayName: Cleanup GPGHOME
   condition: always()
