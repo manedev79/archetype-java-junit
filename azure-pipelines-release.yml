@@ -95,7 +95,6 @@ steps:
 - task: MavenAuthenticate@0
   displayName: Auth to OSS Nexus
   inputs:
-    artifactsFeeds: ossrh
     mavenServiceConnections: OSS Sonatype Nexus
 
 - task: Maven@3
