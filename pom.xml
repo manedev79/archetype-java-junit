@@ -44,6 +44,12 @@
         <maven.gpg.plugin.version>3.0.1</maven.gpg.plugin.version>
         <nexus.staging.maven.plugin.version>1.6.12</nexus.staging.maven.plugin.version>
         <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
+        <!-- Archetype versions -->
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <junit-jupiter-engine.version>5.8.2</junit-jupiter-engine.version>
+        <assertj-core.version>3.21.0</assertj-core.version>
     </properties>
 
     <distributionManagement>
@@ -105,6 +111,46 @@
                         <version>${plexus.utils.version}</version>
                     </dependency>
                 </dependencies>
+                <executions>
+                    <execution>
+                        <id>default-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <useDefaultDelimiters>false</useDefaultDelimiters>
+                            <delimiters>
+                                <delimiter>@</delimiter>
+                            </delimiters>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-testResources</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testResources</goal>
+                        </goals>
+                        <configuration>
+                            <useDefaultDelimiters>false</useDefaultDelimiters>
+                            <delimiters>
+                                <delimiter>@</delimiter>
+                            </delimiters>
+                            <resources>
+                                <testResource>
+                                    <directory>${project.basedir}/src/test/resources</directory>
+                                    <filtering>true</filtering>
+                                </testResource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
