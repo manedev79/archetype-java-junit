@@ -104,6 +104,13 @@ steps:
     goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease -Dgpg.keyname=$(GPG_KEY_ID) -Dgpg.passphrase=$(GPG_PASSPHRASE)
     publishJUnitResults: false
 
+- script: |
+    gh auth login
+    gh release create ${{ parameters.RELEASE_VERSION }} --generate-notes
+  displayName: Create Github Release
+  env:
+    GITHUB_TOKEN: $(GITHUB_TOKEN)
+
 - task: Maven@3
   displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
   inputs:
