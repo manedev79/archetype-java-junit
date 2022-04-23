@@ -6,7 +6,7 @@
 
     <groupId>io.github.manedev79</groupId>
     <artifactId>archetype-java-junit</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
 
     <name>archetype-java-junit</name>
