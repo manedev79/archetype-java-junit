@@ -45,7 +45,7 @@ steps:
   displayName: Pipeline unit tests  
   workingDirectory: $(Build.SourcesDirectory)/.azure-pipelines/tests
 
-- task: Cache@2
+- task: Cache@2.198.0
   displayName: Cache Maven local repo
   inputs:
     key: 'maven | "$(Agent.OS)" | **/pom.xml'
