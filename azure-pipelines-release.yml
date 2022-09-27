@@ -54,14 +54,14 @@ steps:
       maven
     path: $(MAVEN_CACHE_FOLDER)
 
-- task: Maven@3
+- task: Maven@3.211.0
   displayName: Set project version to ${{ parameters.RELEASE_VERSION }}
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
     goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }}
     publishJUnitResults: false
 
-- task: Maven@3
+- task: Maven@3.211.0
   displayName: Build and test
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
@@ -97,7 +97,7 @@ steps:
   inputs:
     mavenServiceConnections: OSS Sonatype Nexus
 
-- task: Maven@3
+- task: Maven@3.211.0
   displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
@@ -111,7 +111,7 @@ steps:
   env:
     GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-- task: Maven@3
+- task: Maven@3.211.0
   displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
