@@ -80,7 +80,7 @@ steps:
     git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
   displayName: Commit release version and create release tag
 
-- task: DownloadSecureFile@1
+- task: DownloadSecureFile@1.200.0
   name: gpgkey
   displayName: 'Download secret signing key'
   inputs:
