@@ -86,7 +86,7 @@ steps:
   inputs:
     secureFile: 'secret_signing_key_F5CE35A802DF35C1.gpg'
 
-- task: ShellScript@2
+- task: ShellScript@2.206.0
   displayName: Import GPG key
   inputs:
     scriptPath: .azure-pipelines/scripts/gpg_import.sh
@@ -124,7 +124,7 @@ steps:
     git push --atomic origin HEAD:$(Build.SourceBranchName)
   displayName: Commit next snapshot version
 
-- task: ShellScript@2
+- task: ShellScript@2.206.0
   displayName: Cleanup GPGHOME
   condition: always()
   inputs:
