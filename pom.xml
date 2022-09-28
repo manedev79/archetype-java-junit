@@ -60,9 +60,8 @@
     </distributionManagement>
 
     <!-- FOR RENOVATE -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
+    <dependencies>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter-engine.version}</version>
@@ -73,8 +72,7 @@
             <artifactId>assertj-core</artifactId>
             <version>${assertj-core.version}</version>
         </dependency>
-        </dependencies>
-    </dependencyManagement>
+    </dependencies>
 
     <build>
         <extensions>
