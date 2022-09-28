@@ -92,7 +92,7 @@ steps:
     scriptPath: .azure-pipelines/scripts/gpg_import.sh
     args: '$(gpgkey.secureFilePath)'
 
-- task: MavenAuthenticate@0
+- task: MavenAuthenticate@0.210.0
   displayName: Auth to OSS Nexus
   inputs:
     mavenServiceConnections: OSS Sonatype Nexus
