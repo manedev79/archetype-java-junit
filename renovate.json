@@ -1,5 +1,9 @@
 {
   "extends": [
     "config:base"
-  ]
+  ],
+  "assignees": [
+    "manedev79"
+  ],
+  "assignAutomerge": true
 }
