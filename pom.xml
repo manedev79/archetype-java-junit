@@ -37,7 +37,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.archetype.version>3.2.1</maven.archetype.version>
-        <plexus.utils.version>3.5.0</plexus.utils.version>
+        <plexus.utils.version>3.5.1</plexus.utils.version>
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
         <maven.resource.plugin.version>3.3.0</maven.resource.plugin.version>
         <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
