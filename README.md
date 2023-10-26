@@ -6,7 +6,7 @@ Maven archetype with recent java version, JUnit5, assertj and git repository in 
 
 Includes:
 
-* Java version of your choice, e.g. 17
+* Java version of your choice, e.g. 21
 * JUnit5
 * assertj
 
@@ -19,8 +19,8 @@ Maven, IntelliJ IDEA and VSCode.
 ```
 mvn archetype:generate -DarchetypeGroupId=io.github.manedev79 \
                        -DarchetypeArtifactId=archetype-java-junit \
-                       -DarchetypeVersion=1.0.6 \
-                       -DjavaVersion=11
+                       -DarchetypeVersion=1.0.7 \
+                       -DjavaVersion=21
                        -DgitInit=true
 ```
 
@@ -29,7 +29,7 @@ mvn archetype:generate -DarchetypeGroupId=io.github.manedev79 \
 #### `javaVersion`
 The Java version to use in the created project.  
 Possible values: Any valid Java version.
-Example: `javaVersion=17`
+Example: `javaVersion=21`
 
 
 #### `gitInit`
@@ -39,7 +39,7 @@ Possible values: `true` or `false`.
 ## Development Setup
 
 ### Prerequisites  
-* Requires Java 17.
+* Requires Java 21.
 * Optional: [sdkman](https://sdkman.io) for switching JDK
   * Use `sdk env` to switch to JDK specified in `.sdkmanrc`.
 
