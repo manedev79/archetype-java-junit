@@ -74,7 +74,7 @@ steps:
   displayName: Configure git
 
 - script: |
-    git add pom.xml
+    git add pom.xml README.md
     git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
     git tag ${{ parameters.RELEASE_VERSION }}
     git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
