@@ -16,9 +16,6 @@ parameters:
   - name: RELEASE_VERSION
     type: string
     displayName: Version to release, e.g. 1.0.0
-  - name: NEXT_SNAPSHOT_VERSION
-    type: string
-    displayName: Next snapshot version, e.g. 1.0.1-SNAPSHOT
 
 variables:
   - group: 'oss-secrets'
@@ -110,19 +107,6 @@ steps:
   displayName: Create Github Release
   env:
     GITHUB_TOKEN: $(GITHUB_TOKEN)
-
-- task: Maven@3
-  displayName: Set project version to ${{ parameters.NEXT_SNAPSHOT_VERSION }}
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.NEXT_SNAPSHOT_VERSION }}'
-    publishJUnitResults: false
-
-- script: |
-    git add pom.xml
-    git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
-    git push --atomic origin HEAD:$(Build.SourceBranchName)
-  displayName: Commit next snapshot version
 
 - task: ShellScript@2
   displayName: Cleanup GPGHOME
