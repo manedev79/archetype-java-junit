@@ -24,9 +24,9 @@ variables:
   - name: MAVEN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.m2/repository
   - name: MAVEN_OPTIONS
-    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m -Prelease-docs'
+    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
   - name: MAVEN_COMMAND_LINE_ARGUMENTS
-    value: '--batch-mode'
+    value: '--batch-mode -Prelease-docs'
   - name: GNUPGHOME 
     value: $(Pipeline.Workspace)/.gnupg
   
