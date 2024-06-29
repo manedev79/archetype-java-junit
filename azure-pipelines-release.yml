@@ -98,8 +98,10 @@ steps:
   displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease -Dgpg.keyname=$(GPG_KEY_ID) -Dgpg.passphrase=$(GPG_PASSPHRASE)
+    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease -Dgpg.keyname=$(GPG_KEY_ID)
     publishJUnitResults: false
+  env:
+    MAVEN_GPG_PASSPHRASE: $(GPG_PASSPHRASE)
 
 - script: |
     gh auth login
