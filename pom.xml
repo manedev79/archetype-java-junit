@@ -113,6 +113,11 @@
                     <artifactId>versions-maven-plugin</artifactId>
                     <version>${versions.maven.plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
                 
                 <!-- FOR RENOVATE -->
                 <plugin>
@@ -179,6 +184,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy file="${project.basedir}/src/test/resources/projects/it-java11/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java11/reference/.gitignore"/>
+                                <copy file="${project.basedir}/src/test/resources/projects/it-java17/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java17/reference/.gitignore"/>
+                                <copy file="${project.basedir}/src/test/resources/projects/it-java21/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java21/reference/.gitignore"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
