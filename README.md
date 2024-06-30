@@ -19,7 +19,7 @@ Maven, IntelliJ IDEA and VSCode.
 ```
 mvn archetype:generate -DarchetypeGroupId=io.github.manedev79 \
                        -DarchetypeArtifactId=archetype-java-junit \
-                       -DarchetypeVersion=1.0.10-rc4 \
+                       -DarchetypeVersion=1.0.10 \
                        -DjavaVersion=21
                        -DgitInit=true
 ```
