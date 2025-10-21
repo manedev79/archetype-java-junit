@@ -198,6 +198,7 @@
                                 <copy file="${project.basedir}/src/test/resources/projects/it-java11/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java11/reference/.gitignore"/>
                                 <copy file="${project.basedir}/src/test/resources/projects/it-java17/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java17/reference/.gitignore"/>
                                 <copy file="${project.basedir}/src/test/resources/projects/it-java21/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java21/reference/.gitignore"/>
+                                <copy file="${project.basedir}/src/test/resources/projects/it-java25/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java25/reference/.gitignore"/>
                             </target>
                         </configuration>
                     </execution>
