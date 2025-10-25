@@ -20,7 +20,7 @@ parameters:
 variables:
   - group: 'oss-secrets'
   - name: JDK_VERSION
-    value: '1.21'
+    value: '1.25'
   - name: MAVEN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.m2/repository
   - name: MAVEN_OPTIONS

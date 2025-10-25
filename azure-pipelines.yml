@@ -13,7 +13,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  JDK_VERSION: 1.21
+  JDK_VERSION: 1.25
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
   MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
