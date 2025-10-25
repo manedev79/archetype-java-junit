@@ -3,4 +3,4 @@
 # Install sdk: sdk env install
 # Use sdk: sdk env
 # Restore previous sdk: sdk env clear
-java=21.0.1-tem
+java=25.0.1-tem
