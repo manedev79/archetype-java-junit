@@ -1,10 +1,11 @@
 {
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "assignees": [
     "manedev79"
   ],
   "assignAutomerge": true,
-  "automerge": true
+  "automerge": true,
+  "minimumReleaseAge": "14 days"
 }
