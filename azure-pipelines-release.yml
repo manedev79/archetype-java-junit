@@ -27,20 +27,12 @@ variables:
     value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
   - name: MAVEN_COMMAND_LINE_ARGUMENTS
     value: '--batch-mode -Prelease-docs'
-  - name: GNUPGHOME 
-    value: $(Pipeline.Workspace)/.gnupg
   
 steps:
 
 - checkout: self
   persistCredentials: 'true'
   clean: 'true'
-
-- script: |
-    ./gpg_import_test.sh
-    ./gpg_cleanup_test.sh
-  displayName: Pipeline unit tests  
-  workingDirectory: $(Build.SourcesDirectory)/.azure-pipelines/tests
 
 - task: Cache@2
   displayName: Cache Maven local repo
@@ -83,24 +75,15 @@ steps:
   inputs:
     secureFile: 'secret_signing_key_F5CE35A802DF35C1.gpg'
 
-- task: ShellScript@2
-  displayName: Import GPG key
-  inputs:
-    scriptPath: .azure-pipelines/scripts/gpg_import.sh
-    args: '$(gpgkey.secureFilePath)'
-
-- task: MavenAuthenticate@0
-  displayName: Auth to OSS Nexus
-  inputs:
-    mavenServiceConnections: OSS Sonatype Nexus
-
 - task: Maven@4
   displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
   inputs:
     jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease -Dgpg.keyname=$(GPG_KEY_ID)
+    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease --settings .azure-pipelines/settings.xml -Dgpg.keyFilePath=$(gpgkey.secureFilePath)
     publishJUnitResults: false
   env:
+    CENTRAL_TOKEN_USERNAME: $(CENTRAL_TOKEN_USERNAME)
+    CENTRAL_TOKEN_PASSWORD: $(CENTRAL_TOKEN_PASSWORD)
     MAVEN_GPG_PASSPHRASE: $(GPG_PASSPHRASE)
 
 - script: |
@@ -109,9 +92,3 @@ steps:
   displayName: Create Github Release
   env:
     GITHUB_TOKEN: $(GITHUB_TOKEN)
-
-- task: ShellScript@2
-  displayName: Cleanup GPGHOME
-  condition: always()
-  inputs:
-    scriptPath: .azure-pipelines/scripts/gpg_cleanup.sh

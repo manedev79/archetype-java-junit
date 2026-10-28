@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Maven settings for the release pipeline. Credentials come from the 'oss-secrets' variable group. -->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <!-- Central Portal user token, see https://central.sonatype.com/account -->
+            <id>central</id>
+            <username>${env.CENTRAL_TOKEN_USERNAME}</username>
+            <password>${env.CENTRAL_TOKEN_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>
