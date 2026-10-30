@@ -86,9 +86,11 @@ steps:
     CENTRAL_TOKEN_PASSWORD: $(CENTRAL_TOKEN_PASSWORD)
     MAVEN_GPG_PASSPHRASE: $(GPG_PASSPHRASE)
 
+# gh picks up GITHUB_TOKEN from the environment, no login needed.
+# The token must be a GitHub PAT with write access to this repository's contents.
 - script: |
-    gh auth login
-    gh release create ${{ parameters.RELEASE_VERSION }} --generate-notes
+    if [[ "${{ parameters.RELEASE_VERSION }}" == *-* ]]; then PRERELEASE=--prerelease; fi
+    gh release create ${{ parameters.RELEASE_VERSION }} --verify-tag --generate-notes ${PRERELEASE:-}
   displayName: Create Github Release
   env:
     GITHUB_TOKEN: $(GITHUB_TOKEN)
