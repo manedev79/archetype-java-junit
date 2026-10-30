@@ -11,7 +11,7 @@ The pipeline will
 1. set the version and build and test the project,
 2. commit the version, tag it and push the tag,
 3. sign the artifacts and upload them to the Central Portal, then wait until they are published,
-4. create a GitHub release with generated notes.
+4. create a GitHub release with generated notes (marked as pre-release for versions like `1.1.0-rc1`).
 
 ## Required secrets
 
@@ -22,7 +22,7 @@ All of them live in Azure DevOps.
 | Variable group `oss-secrets` | `CENTRAL_TOKEN_USERNAME` | Username of a Central Portal user token |
 | Variable group `oss-secrets` | `CENTRAL_TOKEN_PASSWORD` | Password of a Central Portal user token |
 | Variable group `oss-secrets` | `GPG_PASSPHRASE` | Passphrase of the signing key |
-| Variable group `oss-secrets` | `GITHUB_TOKEN` | Token used to create the GitHub release |
+| Variable group `oss-secrets` | `GITHUB_TOKEN` | GitHub fine-grained PAT for this repository with *Contents: Read and write*, used to create the GitHub release |
 | Secure files | `secret_signing_key_F5CE35A802DF35C1.gpg` | Secret signing key, exported with `gpg --export-secret-keys <key id>` |
 
 Generate the user token at <https://central.sonatype.com/account>.
