@@ -8,10 +8,15 @@ with the `central-publishing-maven-plugin`.
 Run the `azure-pipelines-release.yml` pipeline in Azure DevOps and enter the version, e.g. `1.1.0`.
 The pipeline will
 
-1. set the version and build and test the project,
-2. commit the version, tag it and push the tag,
-3. sign the artifacts and upload them to the Central Portal, then wait until they are published,
-4. create a GitHub release with generated notes (marked as pre-release for versions like `1.1.0-rc1`).
+1. set the version and update the README,
+2. commit the version and tag it, without pushing yet,
+3. build and test the project, sign the artifacts and upload them to the Central Portal, then wait until they are published,
+4. push the release commit and the tag,
+5. create a GitHub release with generated notes (marked as pre-release for versions like `1.1.0-rc1`).
+
+If the deployment fails, nothing has been pushed, so the same version can simply be released again.
+If pushing fails after the deployment, the version is already on Maven Central. Push the commit and tag by hand
+and create the GitHub release with `gh release create <version> --verify-tag --generate-notes`.
 
 ## Required secrets
 
