@@ -8,29 +8,59 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>${javaVersion}</maven.compiler.source>
-        <maven.compiler.target>${javaVersion}</maven.compiler.target>
+        <maven.compiler.release>${javaVersion}</maven.compiler.release>
+        <maven-clean-plugin.version>@maven-clean-plugin.version@</maven-clean-plugin.version>
+        <maven-resources-plugin.version>@maven-resources-plugin.version@</maven-resources-plugin.version>
+        <maven-compiler-plugin.version>@maven-compiler-plugin.version@</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>@maven-surefire-plugin.version@</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>@maven-failsafe-plugin.version@</maven-failsafe-plugin.version>
         <maven-jar-plugin.version>@maven-jar-plugin.version@</maven-jar-plugin.version>
+        <maven-failsafe-plugin.version>@maven-failsafe-plugin.version@</maven-failsafe-plugin.version>
+        <maven-install-plugin.version>@maven-install-plugin.version@</maven-install-plugin.version>
         <junit-jupiter-engine.version>@junit-jupiter-engine.version@</junit-jupiter-engine.version>
         <assertj-core.version>@assertj-core.version@</assertj-core.version>
     </properties>
 
     <build>
         <finalName>${artifactId}</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven-failsafe-plugin.version}</version>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven-failsafe-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven-install-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <dependencies>

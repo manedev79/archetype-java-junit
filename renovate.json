@@ -1,4 +1,5 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
   ],
@@ -7,5 +8,25 @@
   ],
   "assignAutomerge": true,
   "automerge": true,
-  "minimumReleaseAge": "14 days"
+  "minimumReleaseAge": "14 days",
+  "azure-pipelines": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Major updates can change what generated projects need, e.g. the minimum Java version. Review them by hand.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Surefire and Failsafe are released together.",
+      "matchPackageNames": [
+        "org.apache.maven.plugins:maven-surefire-plugin",
+        "org.apache.maven.plugins:maven-failsafe-plugin"
+      ],
+      "groupName": "Maven Surefire and Failsafe"
+    }
+  ]
 }

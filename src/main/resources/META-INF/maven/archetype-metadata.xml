@@ -3,7 +3,7 @@
                       name="archetype-java-junit">
     <requiredProperties>
         <requiredProperty key="javaVersion">
-            <defaultValue>11</defaultValue>
+            <defaultValue>17</defaultValue>
             <validationRegex>^[1-9][0-9]?$</validationRegex>
         </requiredProperty>
         <requiredProperty key="gitInit">

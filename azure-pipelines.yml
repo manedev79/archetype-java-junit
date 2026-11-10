@@ -1,7 +1,4 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+# Build the archetype and run its integration tests with the Maven Wrapper.
 
 trigger:
 - main
@@ -13,28 +10,29 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  JDK_VERSION: 1.25
-  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTIONS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
-  MAVEN_COMMAND_LINE_ARGUMENTS: '--batch-mode'
-  
+  # Hosted agents provide one JAVA_HOME_<version>_X64 variable per installed JDK.
+  JDK_HOME: $(JAVA_HOME_25_X64)
+  # Holds the local repository and the Maven distribution downloaded by the wrapper.
+  MAVEN_USER_HOME: $(Pipeline.Workspace)/.m2
+  MAVEN_OPTS: '-Xmx3072m'
+  MAVEN_CLI_ARGS: '--batch-mode --no-transfer-progress -Dmaven.repo.local=$(MAVEN_USER_HOME)/repository'
+
 steps:
 
 - checkout: self
   clean: 'true'
 
 - task: Cache@2
-  displayName: Cache Maven local repo
+  displayName: Cache Maven repository and wrapper
   inputs:
-    key: 'maven | "$(Agent.OS)" | **/pom.xml'
+    key: 'maven | "$(Agent.OS)" | .mvn/wrapper/maven-wrapper.properties | **/pom.xml'
     restoreKeys: |
       maven | "$(Agent.OS)"
-      maven
-    path: $(MAVEN_CACHE_FOLDER)
+    path: $(MAVEN_USER_HOME)
 
-- task: Maven@4
+- script: ./mvnw $(MAVEN_CLI_ARGS) verify
   displayName: Build and test
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    mavenOptions: $(MAVEN_OPTIONS)
-    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) verify'
+  env:
+    JAVA_HOME: $(JDK_HOME)
+    MAVEN_USER_HOME: $(MAVEN_USER_HOME)
+    MAVEN_OPTS: $(MAVEN_OPTS)

@@ -1,7 +1,6 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+# Release the archetype to Maven Central and create a GitHub release.
+# Nothing is pushed to GitHub before the artifacts are published, so a failed
+# deployment leaves no tag behind for a version that never shipped.
 
 trigger:
 - none
@@ -19,15 +18,17 @@ parameters:
 
 variables:
   - group: 'oss-secrets'
-  - name: JDK_VERSION
-    value: '1.25'
-  - name: MAVEN_CACHE_FOLDER
-    value: $(Pipeline.Workspace)/.m2/repository
-  - name: MAVEN_OPTIONS
-    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx3072m'
-  - name: MAVEN_COMMAND_LINE_ARGUMENTS
-    value: '--batch-mode -Prelease-docs'
-  
+  # Hosted agents provide one JAVA_HOME_<version>_X64 variable per installed JDK.
+  - name: JDK_HOME
+    value: $(JAVA_HOME_25_X64)
+  # Holds the local repository and the Maven distribution downloaded by the wrapper.
+  - name: MAVEN_USER_HOME
+    value: $(Pipeline.Workspace)/.m2
+  - name: MAVEN_OPTS
+    value: '-Xmx3072m'
+  - name: MAVEN_CLI_ARGS
+    value: '--batch-mode --no-transfer-progress -Dmaven.repo.local=$(MAVEN_USER_HOME)/repository'
+
 steps:
 
 - checkout: self
@@ -35,39 +36,29 @@ steps:
   clean: 'true'
 
 - task: Cache@2
-  displayName: Cache Maven local repo
+  displayName: Cache Maven repository and wrapper
   inputs:
-    key: 'maven | "$(Agent.OS)" | **/pom.xml'
+    key: 'maven | "$(Agent.OS)" | .mvn/wrapper/maven-wrapper.properties | **/pom.xml'
     restoreKeys: |
       maven | "$(Agent.OS)"
-      maven
-    path: $(MAVEN_CACHE_FOLDER)
+    path: $(MAVEN_USER_HOME)
 
-- task: Maven@4
-  displayName: Set project version to ${{ parameters.RELEASE_VERSION }}
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }}
-    publishJUnitResults: false
-
-- task: Maven@4
-  displayName: Build and test
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    mavenOptions: $(MAVEN_OPTIONS)
-    goals: '$(MAVEN_COMMAND_LINE_ARGUMENTS) verify'
+- script: |
+    ./mvnw $(MAVEN_CLI_ARGS) versions:set -DnewVersion=${{ parameters.RELEASE_VERSION }} -DgenerateBackupPoms=false
+    ./mvnw $(MAVEN_CLI_ARGS) -Prelease-docs process-resources
+  displayName: Set project version to ${{ parameters.RELEASE_VERSION }} and update README
+  env:
+    JAVA_HOME: $(JDK_HOME)
+    MAVEN_USER_HOME: $(MAVEN_USER_HOME)
+    MAVEN_OPTS: $(MAVEN_OPTS)
 
 - script: |
     git config --global user.email "ci@dev.azure.com"
     git config --global user.name "[CI]"
-  displayName: Configure git
-
-- script: |
     git add pom.xml README.md
     git commit -m "[skip ci] Set version to ${{ parameters.RELEASE_VERSION }}"
     git tag ${{ parameters.RELEASE_VERSION }}
-    git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
-  displayName: Commit release version and create release tag
+  displayName: Commit release version and tag it locally
 
 - task: DownloadSecureFile@1
   name: gpgkey
@@ -75,16 +66,19 @@ steps:
   inputs:
     secureFile: 'secret_signing_key_F5CE35A802DF35C1.gpg'
 
-- task: Maven@4
-  displayName: Deploying to Maven Central ${{ parameters.RELEASE_VERSION }}
-  inputs:
-    jdkVersionOption: ${{ variables.JDK_VERSION }}
-    goals: $(MAVEN_COMMAND_LINE_ARGUMENTS) deploy -Prelease --settings .azure-pipelines/settings.xml -Dgpg.keyFilePath=$(gpgkey.secureFilePath)
-    publishJUnitResults: false
+# Builds, runs the integration tests, signs and waits until Maven Central has published the release.
+- script: ./mvnw $(MAVEN_CLI_ARGS) deploy -Prelease --settings .azure-pipelines/settings.xml -Dgpg.keyFilePath=$(gpgkey.secureFilePath)
+  displayName: Deploy ${{ parameters.RELEASE_VERSION }} to Maven Central
   env:
+    JAVA_HOME: $(JDK_HOME)
+    MAVEN_USER_HOME: $(MAVEN_USER_HOME)
+    MAVEN_OPTS: $(MAVEN_OPTS)
     CENTRAL_TOKEN_USERNAME: $(CENTRAL_TOKEN_USERNAME)
     CENTRAL_TOKEN_PASSWORD: $(CENTRAL_TOKEN_PASSWORD)
     MAVEN_GPG_PASSPHRASE: $(GPG_PASSPHRASE)
+
+- script: git push --atomic origin HEAD:$(Build.SourceBranchName) ${{ parameters.RELEASE_VERSION }}
+  displayName: Push release commit and tag
 
 # gh picks up GITHUB_TOKEN from the environment, no login needed.
 # The token must be a GitHub PAT with write access to this repository's contents.

@@ -10,7 +10,7 @@
     <packaging>maven-archetype</packaging>
 
     <name>archetype-java-junit</name>
-    <description>Maven archetype with recent java version, JUnit5, assertj and git repository in place.</description>
+    <description>Maven archetype with recent java version, JUnit 6, AssertJ and git repository in place.</description>
     <url>https://github.com/manedev79/archetype-java-junit</url>
 
     <licenses>
@@ -33,45 +33,66 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.archetype.version>3.4.1</maven.archetype.version>
-        <plexus.utils.version>4.1.0</plexus.utils.version>
-        <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
-        <maven.resource.plugin.version>3.5.0</maven.resource.plugin.version>
-        <maven.jar.plugin.version>3.5.1</maven.jar.plugin.version>
-        <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
-        <central.publishing.maven.plugin.version>0.12.0</central.publishing.maven.plugin.version>
-        <versions.maven.plugin.version>2.23.0</versions.maven.plugin.version>
-        <!-- Archetype versions -->
+
+        <!-- Plugins used to build the archetype -->
+        <maven-archetype-plugin.version>3.4.1</maven-archetype-plugin.version>
+        <maven-enforcer-plugin.version>3.7.0</maven-enforcer-plugin.version>
+        <maven-site-plugin.version>3.22.0</maven-site-plugin.version>
+        <maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
+        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
+        <versions-maven-plugin.version>2.23.0</versions-maven-plugin.version>
+
+        <!-- Versions put into generated projects. The clean, resources, jar and install plugins
+             are also used to build the archetype itself. -->
+        <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+        <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
+        <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
         <maven-failsafe-plugin.version>3.6.1</maven-failsafe-plugin.version>
-        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <maven-install-plugin.version>3.2.0</maven-install-plugin.version>
         <junit-jupiter-engine.version>6.1.3</junit-jupiter-engine.version>
         <assertj-core.version>3.27.7</assertj-core.version>
     </properties>
 
-    <!-- FOR RENOVATE -->
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter-engine.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${assertj-core.version}</version>
-        </dependency>
-    </dependencies>
+    <!-- Only here so that Renovate updates the versions used by generated projects.
+         dependencyManagement does not add them as dependencies of the archetype. -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter-engine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj-core.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <extensions>
             <extension>
                 <groupId>org.apache.maven.archetype</groupId>
                 <artifactId>archetype-packaging</artifactId>
+                <version>${maven-archetype-plugin.version}</version>
             </extension>
         </extensions>
         <pluginManagement>
@@ -79,40 +100,55 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-archetype-plugin</artifactId>
-                    <version>${maven.archetype.version}</version>
+                    <version>${maven-archetype-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven.resource.plugin.version}</version>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven-site-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>${maven.source.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven.jar.plugin.version}</version>
+                    <version>${maven-source-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>${maven.gpg.plugin.version}</version>
+                    <version>${maven-gpg-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>${versions.maven.plugin.version}</version>
+                    <version>${versions-maven-plugin.version}</version>
+                </plugin>
+
+                <!-- Also used by generated projects -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
                 </plugin>
-                
-                <!-- FOR RENOVATE -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -120,88 +156,65 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${maven-failsafe-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven-install-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-utils</artifactId>
-                        <version>${plexus.utils.version}</version>
-                    </dependency>
-                </dependencies>
+                <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-resources</id>
-                        <phase>process-resources</phase>
+                        <id>enforce-build-environment</id>
                         <goals>
-                            <goal>resources</goal>
+                            <goal>enforce</goal>
                         </goals>
                         <configuration>
-                            <useDefaultDelimiters>false</useDefaultDelimiters>
-                            <delimiters>
-                                <delimiter>@</delimiter>
-                            </delimiters>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/src/main/resources</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-testResources</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>testResources</goal>
-                        </goals>
-                        <configuration>
-                            <useDefaultDelimiters>false</useDefaultDelimiters>
-                            <delimiters>
-                                <delimiter>@</delimiter>
-                            </delimiters>
-                            <resources>
-                                <testResource>
-                                    <directory>${project.basedir}/src/test/resources</directory>
-                                    <filtering>true</filtering>
-                                </testResource>
-                            </resources>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.9,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[25,)</version>
+                                    <message>Building the archetype needs Java 25 or newer, because its integration tests generate a Java 25 project.</message>
+                                </requireJavaVersion>
+                                <requirePluginVersions/>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
+                <!-- Fill the versions into the archetype's pom.xml and the reference projects with @...@ placeholders,
+                     so that ${...} expressions are left for the archetype to fill in. Default excludes are turned off,
+                     so that .gitignore files are copied, too. -->
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <copy file="${project.basedir}/src/test/resources/projects/it-java11/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java11/reference/.gitignore"/>
-                                <copy file="${project.basedir}/src/test/resources/projects/it-java17/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java17/reference/.gitignore"/>
-                                <copy file="${project.basedir}/src/test/resources/projects/it-java21/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java21/reference/.gitignore"/>
-                                <copy file="${project.basedir}/src/test/resources/projects/it-java25/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java25/reference/.gitignore"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                    <delimiters>
+                        <delimiter>@</delimiter>
+                    </delimiters>
+                    <addDefaultExcludes>false</addDefaultExcludes>
+                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>${central.publishing.maven.plugin.version}</version>
+                <version>${central-publishing-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
@@ -229,6 +242,8 @@
                             </goals>
                             <configuration>
                                 <outputDirectory>${project.basedir}</outputDirectory>
+                                <!-- The README uses ${project.version}, which the plugin-wide @ delimiter would not replace -->
+                                <useDefaultDelimiters>true</useDefaultDelimiters>
                                 <resources>                                        
                                 <resource>
                                     <directory>${project.basedir}/src/main/doc</directory>
