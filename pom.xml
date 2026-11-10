@@ -10,7 +10,7 @@
     <packaging>maven-archetype</packaging>
 
     <name>archetype-java-junit</name>
-    <description>Maven archetype with recent java version, JUnit5, assertj and git repository in place.</description>
+    <description>Maven archetype with recent java version, JUnit 6, AssertJ and git repository in place.</description>
     <url>https://github.com/manedev79/archetype-java-junit</url>
 
     <licenses>
@@ -188,7 +188,6 @@
                         </goals>
                         <configuration>
                             <target>
-                                <copy file="${project.basedir}/src/test/resources/projects/it-java11/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java11/reference/.gitignore"/>
                                 <copy file="${project.basedir}/src/test/resources/projects/it-java17/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java17/reference/.gitignore"/>
                                 <copy file="${project.basedir}/src/test/resources/projects/it-java21/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java21/reference/.gitignore"/>
                                 <copy file="${project.basedir}/src/test/resources/projects/it-java25/reference/.gitignore" tofile="${project.build.testOutputDirectory}/projects/it-java25/reference/.gitignore"/>
